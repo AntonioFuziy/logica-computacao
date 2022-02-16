@@ -9,9 +9,6 @@ sub_list = []
 if input_string[0] == '-' or input_string[0] == '+':
   raise ValueError
 
-if "-" and "+" not in parse_string:
-  raise ValueError
-
 split_sum = parse_string.split('+')
 
 for i in split_sum:
