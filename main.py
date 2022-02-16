@@ -1,13 +1,7 @@
 import sys
 
-# string test "10   +  5 - 4   + 4 -   10"
 input_string = sys.argv[1]
 parse_string = input_string.replace(' ', '')
-print(parse_string)
-print("")
-
-soma = False
-sub = False
 
 number = 0
 sub_list = []
@@ -15,9 +9,10 @@ sub_list = []
 if input_string[0] == '-' or input_string[0] == '+':
   raise ValueError
 
-split_sum = parse_string.split('+')
+if "-" and "+" not in parse_string:
+  raise ValueError
 
-print(split_sum)
+split_sum = parse_string.split('+')
 
 for i in split_sum:
   if "-" not in i:
@@ -33,5 +28,4 @@ if len(sub_list) > 0:
         number += int(sub_string[sub_index])
       else:
         number -= int(sub_string[sub_index])
-    print(sub_string)
 print(number)
