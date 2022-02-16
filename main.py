@@ -6,6 +6,9 @@ parse_string = input_string.replace(' ', '')
 number = 0
 sub_list = []
 
+if "-" not in parse_string and "+" not in parse_string:
+  raise ValueError
+
 if input_string[0] == '-' or input_string[0] == '+':
   raise ValueError
 
