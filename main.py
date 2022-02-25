@@ -61,6 +61,7 @@ class Tokenizer:
 
 class Parser:
   tokens = None
+  
   def parse_expression():
     result = 0
     
