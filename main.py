@@ -77,8 +77,9 @@ class Parser:
     # Parser.tokens.select_next()
 
     while Parser.tokens.actual_token.token_type != "EOF":
-      # print(Parser.tokens.actual_token.token_type)
-      # print(Parser.tokens.actual_token.value)
+
+      if Parser.tokens.actual_token.token_type != "NUMBER":
+        raise ValueError
 
       result = Parser.tokens.actual_token.value
       Parser.tokens.select_next()
@@ -109,13 +110,10 @@ class Parser:
           else:
             raise ValueError
             
-        Parser.tokens.select_next()
+        # Parser.tokens.select_next()
       return result
   
   def parse_expression():
-
-    if (("-" not in Parser.tokens.origin) and ("+" not in Parser.tokens.origin) and ("*" not in Parser.tokens.origin) and ("/" not in Parser.tokens.origin)) and len(Parser.tokens.origin) > 1:
-      raise ValueError
     
     Parser.tokens.select_next()
     result = Parser.parse_term()
