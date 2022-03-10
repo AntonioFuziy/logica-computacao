@@ -1,4 +1,14 @@
+import re
 import sys
+
+class PrePro:
+  def __init__(self, entire_string):
+    self.entire_string = entire_string
+  
+  def filter_expression(self):
+    self.entire_string = re.sub("/\*.*?\*/", "", self.entire_string)
+    return self.entire_string
+
 class Token:
   def __init__(self, token_type, value):
     self.token_type = token_type
@@ -21,11 +31,13 @@ class Tokenizer:
       self.position += 1
       self.select_next()
 
+    #checar se o proximo caracter é um *
     elif self.origin[self.position] == "*":
       self.position += 1
       self.actual_token = Token("MULT", "*")
       return self.actual_token
       
+    #checar se o proximo caracter é um /
     elif self.origin[self.position] == "/":
       self.position += 1
       self.actual_token = Token("DIV", "/")
@@ -74,82 +86,70 @@ class Parser:
 
   def parse_term():
     result = 0
-    # Parser.tokens.select_next()
 
-    while Parser.tokens.actual_token.token_type != "EOF":
+    if Parser.tokens.actual_token.token_type != "NUMBER":
+      raise ValueError
 
-      if Parser.tokens.actual_token.token_type != "NUMBER":
-        raise ValueError
+    result = Parser.tokens.actual_token.value
+    Parser.tokens.select_next()
+    
+    #enquanto nao terminar e for + ou -
+    while (Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV") and Parser.tokens.actual_token.token_type != "EOF":
+      if Parser.tokens.actual_token.token_type == "MULT":
+        Parser.tokens.select_next()
 
-      result = Parser.tokens.actual_token.value
-      Parser.tokens.select_next()
-      
-      while Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV":
+        #Se for numero MULT
+        if Parser.tokens.actual_token.token_type == "NUMBER":
+          result *= Parser.tokens.actual_token.value
         
-        # print(Parser.tokens.actual_token.token_type)
-        # print(Parser.tokens.actual_token.value)
-        if Parser.tokens.actual_token.token_type == "MULT":
-          Parser.tokens.select_next()
+        #se não for numero retorna erro
+        else:
+          raise ValueError
 
-          #Se for numero soma
-          if Parser.tokens.actual_token.token_type == "NUMBER":
-            result *= Parser.tokens.actual_token.value
+      elif Parser.tokens.actual_token.token_type == "DIV":
+        Parser.tokens.select_next()
+
+        #Se for numero DIV
+        if Parser.tokens.actual_token.token_type == "NUMBER":
+          result //= Parser.tokens.actual_token.value
+        
+        #se não for numero retorna erro
+        else:
+          raise ValueError
           
-          #se não for numero retorna erro
-          else:
-            raise ValueError
-
-        elif Parser.tokens.actual_token.token_type == "DIV":
-          Parser.tokens.select_next()
-
-          #Se for numero soma
-          if Parser.tokens.actual_token.token_type == "NUMBER":
-            result //= Parser.tokens.actual_token.value
-          
-          #se não for numero retorna erro
-          else:
-            raise ValueError
-            
-        # Parser.tokens.select_next()
-      return result
+      Parser.tokens.select_next()
+    return result
   
   def parse_expression():
     
     Parser.tokens.select_next()
     result = Parser.parse_term()
     
-    # enquanto o token nao terminar
-    while Parser.tokens.actual_token.token_type != "EOF":
-      # print(Parser.tokens.actual_token.token_type)
-      # print(Parser.tokens.actual_token.value)
-    
-      #enquanto for + ou -
-      while Parser.tokens.actual_token.token_type == "PLUS" or Parser.tokens.actual_token.token_type == "MINUS":
-        #se for +
-        # print(Parser.tokens.actual_token.token_type)
-        # print(Parser.tokens.actual_token.value)
-        if Parser.tokens.actual_token.token_type == "PLUS":
-          Parser.tokens.select_next()
+    #enquanto nao terminar e for + ou -
+    while (Parser.tokens.actual_token.token_type == "PLUS" or Parser.tokens.actual_token.token_type == "MINUS") and Parser.tokens.actual_token.token_type != "EOF":
+      #se for +
+      if Parser.tokens.actual_token.token_type == "PLUS":
+        Parser.tokens.select_next()
 
-          #Se for numero soma
-          result += Parser.parse_term()
-          
-        #se for -
-        elif Parser.tokens.actual_token.token_type == "MINUS":
-          Parser.tokens.select_next()
-
-          #Se for numero subtrai
-          result -= Parser.parse_term()
-
-          #se não for numero retorna erro
-        else:
-          raise ValueError
+        #Se for numero soma
+        result += Parser.parse_term()
         
-        # Parser.tokens.select_next()
-      return result
+      #se for -
+      elif Parser.tokens.actual_token.token_type == "MINUS":
+        Parser.tokens.select_next()
+
+        #Se for numero subtrai
+        result -= Parser.parse_term()
+
+      #se não for numero retorna erro
+      else:
+        raise ValueError
+
+    return result
   
   def run(code):
-    Parser.tokens = Tokenizer(code)
+    code_filtered = PrePro(code).filter_expression()
+    Parser.tokens = Tokenizer(code_filtered)
     result = Parser.parse_expression()
     print(result)
 
