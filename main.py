@@ -77,16 +77,16 @@ class Parser:
     # Parser.tokens.select_next()
 
     while Parser.tokens.actual_token.token_type != "EOF":
-      print(Parser.tokens.actual_token.token_type)
-      print(Parser.tokens.actual_token.value)
+      # print(Parser.tokens.actual_token.token_type)
+      # print(Parser.tokens.actual_token.value)
 
       result = Parser.tokens.actual_token.value
       Parser.tokens.select_next()
       
       while Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV":
         
-        print(Parser.tokens.actual_token.token_type)
-        print(Parser.tokens.actual_token.value)
+        # print(Parser.tokens.actual_token.token_type)
+        # print(Parser.tokens.actual_token.value)
         if Parser.tokens.actual_token.token_type == "MULT":
           Parser.tokens.select_next()
 
@@ -122,14 +122,14 @@ class Parser:
     
     # enquanto o token nao terminar
     while Parser.tokens.actual_token.token_type != "EOF":
-      print(Parser.tokens.actual_token.token_type)
-      print(Parser.tokens.actual_token.value)
+      # print(Parser.tokens.actual_token.token_type)
+      # print(Parser.tokens.actual_token.value)
     
       #enquanto for + ou -
       while Parser.tokens.actual_token.token_type == "PLUS" or Parser.tokens.actual_token.token_type == "MINUS":
         #se for +
-        print(Parser.tokens.actual_token.token_type)
-        print(Parser.tokens.actual_token.value)
+        # print(Parser.tokens.actual_token.token_type)
+        # print(Parser.tokens.actual_token.value)
         if Parser.tokens.actual_token.token_type == "PLUS":
           Parser.tokens.select_next()
 
@@ -153,6 +153,6 @@ class Parser:
   def run(code):
     Parser.tokens = Tokenizer(code)
     result = Parser.parse_expression()
-    print(result)
+    # print(result)
 
 Parser.run(sys.argv[1])
