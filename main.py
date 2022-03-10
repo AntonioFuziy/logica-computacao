@@ -153,6 +153,6 @@ class Parser:
   def run(code):
     Parser.tokens = Tokenizer(code)
     result = Parser.parse_expression()
-    # print(result)
+    print(result)
 
 Parser.run(sys.argv[1])
