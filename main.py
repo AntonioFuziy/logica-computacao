@@ -100,12 +100,12 @@ class Parser:
     result = Parser.tokens.actual_token.value
     Parser.tokens.select_next()
   
-    print(Parser.tokens.actual_token.token_type)
-    print(Parser.tokens.actual_token.value)
+    # print(Parser.tokens.actual_token.token_type)
+    # print(Parser.tokens.actual_token.value)
     #enquanto nao terminar e for * ou /
     while (Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV") and Parser.tokens.actual_token.token_type != "EOF":
-      print(Parser.tokens.actual_token.token_type)
-      print(Parser.tokens.actual_token.value)
+      # print(Parser.tokens.actual_token.token_type)
+      # print(Parser.tokens.actual_token.value)
       
       if Parser.tokens.actual_token.token_type == "MULT":
         Parser.tokens.select_next()
@@ -137,12 +137,12 @@ class Parser:
     Parser.tokens.select_next()
     result = Parser.parse_term()
 
-    print(Parser.tokens.actual_token.token_type)
-    print(Parser.tokens.actual_token.value)
+    # print(Parser.tokens.actual_token.token_type)
+    # print(Parser.tokens.actual_token.value)
     #enquanto nao terminar e for + ou -
     while (Parser.tokens.actual_token.token_type == "PLUS" or Parser.tokens.actual_token.token_type == "MINUS") and Parser.tokens.actual_token.token_type != "EOF":      
-      print(Parser.tokens.actual_token.token_type)
-      print(Parser.tokens.actual_token.value)
+      # print(Parser.tokens.actual_token.token_type)
+      # print(Parser.tokens.actual_token.value)
       #se for +
       if Parser.tokens.actual_token.token_type == "PLUS":
         Parser.tokens.select_next()
@@ -164,7 +164,7 @@ class Parser:
   
   def run(code):
     code_filtered = PrePro(code).filter_expression()
-    print(code_filtered)
+    # print(code_filtered)
     Parser.tokens = Tokenizer(code_filtered)
     result = Parser.parse_expression()
     print(result)
