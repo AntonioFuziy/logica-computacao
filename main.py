@@ -26,11 +26,11 @@ class Tokenizer:
       self.actual_token = Token("EOF", " ")
       return self.actual_token
     
-    if self.origin[0] == " ":
-      pass
-    else:
-      if (("-" not in self.origin) and ("+" not in self.origin) and ("*" not in self.origin) and ("/" not in self.origin)) and len(self.origin) > 1:
-        raise ValueError
+    # if self.origin[0] == " ":
+    #   pass
+    # else:
+    #   if (("-" not in self.origin) and ("+" not in self.origin) and ("*" not in self.origin) and ("/" not in self.origin)) and len(self.origin) > 1:
+    #     raise ValueError
     
 
     #checar se o proximo caracter é um espaço
@@ -160,6 +160,9 @@ class Parser:
       #se não for numero retorna erro
       else:
         raise ValueError
+    if Parser.tokens.actual_token.token_type != "EOF":
+      raise ValueError
+
     return result
   
   def run(code):
