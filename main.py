@@ -26,13 +26,6 @@ class Tokenizer:
     if self.position >= len(self.origin):
       self.actual_token = Token("EOF", " ")
       return self.actual_token
-    
-    # if self.origin[0] == " ":
-    #   pass
-    # else:
-    #   if (("-" not in self.origin) and ("+" not in self.origin) and ("*" not in self.origin) and ("/" not in self.origin)) and len(self.origin) > 1:
-    #     raise ValueError
-    
 
     #checar se o proximo caracter é um espaço
     if self.origin[self.position] == " ":
@@ -110,7 +103,6 @@ class Parser:
       Parser.tokens.select_next()
     
     elif Parser.tokens.actual_token.token_type == "OPEN_PAR":
-      # Parser.tokens.select_next()
       result = Parser.parse_expression()
       if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
         raise ValueError
@@ -123,6 +115,9 @@ class Parser:
     elif Parser.tokens.actual_token.token_type == "MINUS":
       Parser.tokens.select_next()
       result -= Parser.parse_factor()
+    
+    else:
+      raise ValueError
       
     return result
 
@@ -138,11 +133,10 @@ class Parser:
       elif Parser.tokens.actual_token.token_type == "DIV":
         Parser.tokens.select_next()
         result //= Parser.parse_factor()
-        
+
     return result
   
   def parse_expression():
-    
     Parser.tokens.select_next()
     result = Parser.parse_term()
 
