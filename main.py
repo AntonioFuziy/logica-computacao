@@ -118,62 +118,27 @@ class Parser:
     
     elif Parser.tokens.actual_token.token_type == "PLUS":
       Parser.tokens.select_next()
-
-      #Se for numero PLUS
-      if Parser.tokens.actual_token.token_type == "NUMBER":
-        result += Parser.parse_factor()
+      result += Parser.parse_factor()
       
-      #se não for numero retorna erro
-      else:
-        raise ValueError
-
     elif Parser.tokens.actual_token.token_type == "MINUS":
       Parser.tokens.select_next()
-
-      #Se for numero MINUS
-      if Parser.tokens.actual_token.token_type == "NUMBER":
-        result -= Parser.parse_factor()
+      result -= Parser.parse_factor()
       
-      #se não for numero retorna erro
-      else:
-        raise ValueError
-    
     return result
 
   def parse_term():
     result = Parser.parse_factor()
-
-    # if Parser.tokens.actual_token.token_type != "NUMBER":
-    #   raise ValueError
-
-    # result = Parser.tokens.actual_token.value
-    # Parser.tokens.select_next()
   
     #enquanto nao terminar e for * ou /
-    while (Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV") and Parser.tokens.actual_token.token_type != "EOF":      
+    while (Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV"):      
       if Parser.tokens.actual_token.token_type == "MULT":
         Parser.tokens.select_next()
-
-        #Se for numero MULT
-        if Parser.tokens.actual_token.token_type == "NUMBER":
-          result *= Parser.tokens.actual_token.value
-        
-        #se não for numero retorna erro
-        else:
-          raise ValueError
+        result *= Parser.parse_factor()
 
       elif Parser.tokens.actual_token.token_type == "DIV":
         Parser.tokens.select_next()
-
-        #Se for numero DIV
-        if Parser.tokens.actual_token.token_type == "NUMBER":
-          result //= Parser.tokens.actual_token.value
+        result //= Parser.parse_factor()
         
-        #se não for numero retorna erro
-        else:
-          raise ValueError
-          
-      Parser.tokens.select_next()
     return result
   
   def parse_expression():
