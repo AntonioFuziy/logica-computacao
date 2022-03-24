@@ -166,8 +166,12 @@ class Parser:
     return node
   
   def run(code):
-    code_filtered = PrePro(code).filter_expression()
-    Parser.tokens = Tokenizer(code_filtered)
+    with open(code, "r") as file:
+      lines = file.readlines()
+      for line in lines:
+        print(line)
+        code_filtered = PrePro(line).filter_expression()
+        Parser.tokens = Tokenizer(code_filtered)
     node = Parser.parse_expression()
     if Parser.tokens.actual_token.token_type != "EOF":
       raise Exception("EOF run error")
