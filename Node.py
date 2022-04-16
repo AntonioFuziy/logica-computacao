@@ -3,35 +3,52 @@ class Node():
     self.value = value
     self.children = children
   
-  def Evaluate():
+  def Evaluate(self, symbol_table):
     pass
 
+class Identifier(Node):
+  def Evaluate(self, symbol_table):
+    return symbol_table.getter(self.value)
+
+class Assignment(Node):
+  def Evaluate(self, symbol_table):
+    symbol_table.setter(self.children[0].value, self.children[1].Evaluate(symbol_table))
+
+class Printf(Node):
+  def Evaluate(self, symbol_table):
+    print(self.children[0].Evaluate(symbol_table))
+
+class Block(Node):
+  def Evaluate(self, symbol_table):
+    for child in self.children:
+      child.Evaluate(symbol_table)
+
 class BinOp(Node):
-  def Evaluate(self):
+  def Evaluate(self, symbol_table):
     if self.value == "*":
-      return self.children[0].Evaluate() * self.children[1].Evaluate()
+      return self.children[0].Evaluate(symbol_table) * self.children[1].Evaluate(symbol_table)
     elif self.value == "/":
-      return self.children[0].Evaluate() // self.children[1].Evaluate()
+      return self.children[0].Evaluate(symbol_table) // self.children[1].Evaluate(symbol_table)
     elif self.value == "+":
-      return self.children[0].Evaluate() + self.children[1].Evaluate()
+      return self.children[0].Evaluate(symbol_table) + self.children[1].Evaluate(symbol_table)
     elif self.value == "-":
-      return self.children[0].Evaluate() - self.children[1].Evaluate()
+      return self.children[0].Evaluate(symbol_table) - self.children[1].Evaluate(symbol_table)
     else:
       raise Exception("BinOp error")
 
 class UnOp(Node):
-  def Evaluate(self):
+  def Evaluate(self, symbol_table):
     if self.value == "+":
-      return self.children[0].Evaluate()
+      return self.children[0].Evaluate(symbol_table)
     elif self.value == "-":
-      return -self.children[0].Evaluate()
+      return -self.children[0].Evaluate(symbol_table)
     else:
       raise Exception("UnOp error")
 
 class IntVal(Node):
-  def Evaluate(self):
+  def Evaluate(self, symbol_table):
     return self.value
 
 class NoOp(Node):
-  def Evaluate(self):
+  def Evaluate(self, symbol_table):
     pass
