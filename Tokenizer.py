@@ -7,14 +7,14 @@ class Tokenizer:
     self.actual_token = None
     self.reserved_words = ["printf"]
 
-  def select_next(self):
+  def select_next(self):    
+    while self.position < len(self.origin) and self.origin[self.position] == "\n":
+      self.position += 1
+
     #checar se o proximo caracter é um EOF
     if self.position >= len(self.origin):
       self.actual_token = Token("EOF", " ")
       return self.actual_token
-    
-    while self.origin[self.position] == "\n":
-      self.position += 1
 
     #checar se o proximo caracter é um *
     if self.origin[self.position] == "*":
