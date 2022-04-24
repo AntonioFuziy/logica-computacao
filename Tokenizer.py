@@ -5,7 +5,13 @@ class Tokenizer:
     self.origin = origin
     self.position = 0
     self.actual_token = None
-    self.reserved_words = ["printf"]
+    self.reserved_words = {
+      "printf": "PRINTF",
+      "scanf": "SCANF",
+      "if": "IF",
+      "while": "WHILE", 
+      "else": "ELSE"
+    }
 
   def select_next(self):    
     while self.position < len(self.origin) and self.origin[self.position] == "\n":
@@ -52,6 +58,11 @@ class Tokenizer:
     
     elif self.origin[self.position] == "=":
       self.position += 1
+      if self.origin[self.position] == "=":
+        self.position += 1
+        self.actual_token = Token("EQUALTO", " ")
+        return self.actual_token
+      
       self.actual_token = Token("EQUAL", " ")
       return self.actual_token
     
@@ -105,11 +116,44 @@ class Tokenizer:
         #se não for um digito
       
       if variable in self.reserved_words:
-        self.actual_token = Token("PRINTF", variable)
+        self.actual_token = Token(self.reserved_words[variable], variable)
         return self.actual_token
       else:
         self.actual_token = Token("IDENTIFIER", variable)
         return self.actual_token
+
+    elif self.origin[self.position] == ">":
+      self.position += 1
+      self.actual_token = Token("GREATER", " ")
+      return self.actual_token
+
+    elif self.origin[self.position] == "<":
+      self.position += 1
+      self.actual_token = Token("MINOR", " ")
+      return self.actual_token
+
+    elif self.origin[self.position] == "!":
+      self.position += 1
+      self.actual_token = Token("NOT", " ")
+      return self.actual_token
     
+    elif self.origin[self.position] == "|":
+      self.position += 1
+      if self.origin[self.position] == "|":
+        self.position += 1
+        self.actual_token = Token("OR", " ")
+        return self.actual_token
+      else:
+        raise Exception("Invalid token |")
+
+    elif self.origin[self.position] == "&":
+      self.position += 1
+      if self.origin[self.position] == "&":
+        self.position += 1
+        self.actual_token = Token("AND", " ")
+        return self.actual_token
+      else:
+        raise Exception("Invalid token &")
+
     else:
       raise Exception("select next error")

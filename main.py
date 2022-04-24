@@ -1,6 +1,6 @@
 import sys
 
-from Node import Assignment, BinOp, Block, Identifier, IntVal, NoOp, Printf, UnOp
+from Node import Assignment, BinOp, Block, Identifier, If, IntVal, NoOp, Printf, Scanf, UnOp, While
 from PrePro import PrePro
 from SymbolTable import SymbolTable
 from Tokenizer import Tokenizer
@@ -14,7 +14,7 @@ class Parser:
       Parser.tokens.select_next()
     
     elif Parser.tokens.actual_token.token_type == "OPEN_PAR":
-      node = Parser.parse_expression()
+      node = Parser.relative_expression()
       if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
         raise Exception("Parenthesis error")
       Parser.tokens.select_next()
@@ -26,6 +26,21 @@ class Parser:
     elif Parser.tokens.actual_token.token_type == "MINUS":
       Parser.tokens.select_next()
       node = UnOp("-", [Parser.parse_factor()])
+
+    elif Parser.tokens.actual_token.token_type == "NOT":
+      Parser.tokens.select_next()
+      node = UnOp("!", [Parser.parse_factor()])
+    
+    elif Parser.tokens.actual_token.token_type == "SCANF":
+      Parser.tokens.select_next()
+      if Parser.tokens.actual_token.token_type != "OPEN_PAR":
+        raise Exception("Scanf error")
+      Parser.tokens.select_next()
+      node = Scanf("", [])
+      Parser.tokens.select_next()
+      if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+        raise Exception("Scanf error")
+      Parser.tokens.select_next()
 
     elif Parser.tokens.actual_token.token_type == "IDENTIFIER":
       node = Identifier(Parser.tokens.actual_token.value, [])
@@ -48,6 +63,10 @@ class Parser:
         Parser.tokens.select_next()
         node = BinOp("/", [node, Parser.parse_factor()])
       
+      elif Parser.tokens.actual_token.token_type == "AND":
+        Parser.tokens.select_next()
+        node = BinOp("&&", [node, Parser.parse_factor()])
+      
       else:
         raise Exception("Parse term error")
 
@@ -64,10 +83,33 @@ class Parser:
       elif Parser.tokens.actual_token.token_type == "MINUS":
         Parser.tokens.select_next()
         node = BinOp("-", [node, Parser.parse_term()])
+      
+      elif Parser.tokens.actual_token.token_type == "OR":
+        Parser.tokens.select_next()
+        node = BinOp("||", [node, Parser.parse_term()])
 
       else:
         raise Exception("Parse expression")
 
+    return node
+
+  def relative_expression():
+    print(Parser.tokens.actual_token.value)
+    node = Parser.parse_expression()
+    
+    if Parser.tokens.actual_token.token_type == "EQUALTO":
+      Parser.tokens.select_next()
+      node = BinOp("==", [node, Parser.parse_expression()])
+    elif Parser.tokens.actual_token.token_type == "MINOR":
+      Parser.tokens.select_next()
+      node = BinOp("<", [node, Parser.parse_expression()])
+    elif Parser.tokens.actual_token.token_type == "GREATER":
+      Parser.tokens.select_next()
+      node = BinOp(">", [node, Parser.parse_expression()])
+    else:
+      print(Parser.tokens.actual_token.token_type)
+      raise Exception("Parse relative expression error")
+    
     return node
 
   def parse_statement():
@@ -76,7 +118,7 @@ class Parser:
       Parser.tokens.select_next()
       if Parser.tokens.actual_token.token_type == "EQUAL":
         Parser.tokens.select_next()
-        node = Assignment("=", [node, Parser.parse_expression()])
+        node = Assignment("=", [node, Parser.relative_expression()])
         if Parser.tokens.actual_token.token_type == "SEMICOLON":
           Parser.tokens.select_next()
         else:
@@ -88,7 +130,7 @@ class Parser:
       Parser.tokens.select_next()
       if Parser.tokens.actual_token.token_type == "OPEN_PAR":
         Parser.tokens.select_next()
-        node = Printf("printf", [Parser.parse_expression()])
+        node = Printf("printf", [Parser.relative_expression()])
         if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
           raise Exception("Parse statement error")
         else:
@@ -100,12 +142,41 @@ class Parser:
       else:
         raise Exception("Parse statement error")
 
+    elif Parser.tokens.actual_token.token_type == "IF":
+      Parser.tokens.select_next()
+      if Parser.tokens.actual_token.token_type == "OPEN_PAR":
+        Parser.tokens.select_next()
+        node = Parser.relative_expression()
+        if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+          raise Exception("Parse statement IF error")
+        else:
+          other_node = Parser.parse_statement()
+          if Parser.tokens.actual_token.token_type == "ELSE":
+            Parser.tokens.select_next()
+            node = If("if", [node, other_node, Parser.parse_statement()])
+          else:
+            node = If("if", [node, other_node])
+      else:
+        raise Exception("Parse statement IF error")
+
+    elif Parser.tokens.actual_token.token_type == "WHILE":
+      Parser.tokens.select_next()
+      if Parser.tokens.actual_token.token_type == "OPEN_PAR":
+        Parser.tokens.select_next()
+        node = Parser.relative_expression()
+        if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+          raise Exception("Parse statement WHILE error")
+        else:
+          node = While("while", [node, Parser.parse_statement()])
+      else:
+        raise Exception("Parse statement WHILE error")
+
     elif Parser.tokens.actual_token.token_type == "SEMICOLON":
       node = NoOp(None, [])
       Parser.tokens.select_next()
       
     else:
-      raise Exception("Parse statement error")
+      node = Parser.parse_block()
     
     return node
 

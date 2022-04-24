@@ -33,6 +33,16 @@ class BinOp(Node):
       return self.children[0].Evaluate(symbol_table) + self.children[1].Evaluate(symbol_table)
     elif self.value == "-":
       return self.children[0].Evaluate(symbol_table) - self.children[1].Evaluate(symbol_table)
+    elif self.value == "==":
+      return self.children[0].Evaluate(symbol_table) == self.children[1].Evaluate(symbol_table)
+    elif self.value == "&&":
+      return self.children[0].Evaluate(symbol_table) and self.children[1].Evaluate(symbol_table)
+    elif self.value == "||":
+      return self.children[0].Evaluate(symbol_table) or self.children[1].Evaluate(symbol_table)
+    elif self.value == ">":
+      return self.children[0].Evaluate(symbol_table) > self.children[1].Evaluate(symbol_table)
+    elif self.value == "<":
+      return self.children[0].Evaluate(symbol_table) < self.children[1].Evaluate(symbol_table)
     else:
       raise Exception("BinOp error")
 
@@ -42,6 +52,8 @@ class UnOp(Node):
       return self.children[0].Evaluate(symbol_table)
     elif self.value == "-":
       return -self.children[0].Evaluate(symbol_table)
+    elif self.value == "!":
+      return not self.children[0].Evaluate(symbol_table)
     else:
       raise Exception("UnOp error")
 
@@ -52,3 +64,19 @@ class IntVal(Node):
 class NoOp(Node):
   def Evaluate(self, symbol_table):
     pass
+
+class While(Node):
+  def Evaluate(self, symbol_table):
+    while self.children[0].Evaluate(symbol_table):
+      self.children[1].Evaluate(symbol_table)
+
+class If(Node):
+  def Evaluate(self, symbol_table):
+    if self.children[0].Evaluate(symbol_table):
+      self.children[1].Evaluate(symbol_table)
+    elif len(self.children) > 2:
+      self.children[2].Evaluate(symbol_table)
+
+class Scanf(Node):
+  def Evaluate(self, symbol_table):
+    int(input())
