@@ -35,7 +35,6 @@ class Parser:
       Parser.tokens.select_next()
       if Parser.tokens.actual_token.token_type != "OPEN_PAR":
         raise Exception("Scanf error")
-      Parser.tokens.select_next()
       node = Scanf("", [])
       Parser.tokens.select_next()
       if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
@@ -54,7 +53,7 @@ class Parser:
   def parse_term():
     node = Parser.parse_factor()
     
-    while (Parser.tokens.actual_token.token_type == "MULT" or Parser.tokens.actual_token.token_type == "DIV"):      
+    while (Parser.tokens.actual_token.token_type in ["MULT", "DIV"]):      
       if Parser.tokens.actual_token.token_type == "MULT":
         Parser.tokens.select_next()
         node = BinOp("*", [node, Parser.parse_factor()])
@@ -75,7 +74,7 @@ class Parser:
   def parse_expression():
     node = Parser.parse_term()
 
-    while (Parser.tokens.actual_token.token_type == "PLUS" or Parser.tokens.actual_token.token_type == "MINUS"):
+    while (Parser.tokens.actual_token.token_type in ["PLUS", "MINUS"]):
       if Parser.tokens.actual_token.token_type == "PLUS":
         Parser.tokens.select_next()
         node = BinOp("+", [node, Parser.parse_term()])
@@ -94,21 +93,19 @@ class Parser:
     return node
 
   def relative_expression():
-    print(Parser.tokens.actual_token.value)
     node = Parser.parse_expression()
-    
-    if Parser.tokens.actual_token.token_type == "EQUALTO":
-      Parser.tokens.select_next()
-      node = BinOp("==", [node, Parser.parse_expression()])
-    elif Parser.tokens.actual_token.token_type == "MINOR":
-      Parser.tokens.select_next()
-      node = BinOp("<", [node, Parser.parse_expression()])
-    elif Parser.tokens.actual_token.token_type == "GREATER":
-      Parser.tokens.select_next()
-      node = BinOp(">", [node, Parser.parse_expression()])
-    else:
-      print(Parser.tokens.actual_token.token_type)
-      raise Exception("Parse relative expression error")
+    while Parser.tokens.actual_token.token_type in ["EQUALTO", "MINOR", "GREATER"]:
+      if Parser.tokens.actual_token.token_type == "EQUALTO":
+        Parser.tokens.select_next()
+        node = BinOp("==", [node, Parser.parse_expression()])
+      elif Parser.tokens.actual_token.token_type == "MINOR":
+        Parser.tokens.select_next()
+        node = BinOp("<", [node, Parser.parse_expression()])
+      elif Parser.tokens.actual_token.token_type == "GREATER":
+        Parser.tokens.select_next()
+        node = BinOp(">", [node, Parser.parse_expression()])
+      else:
+        raise Exception("Parse relative expression error")
     
     return node
 
@@ -150,6 +147,7 @@ class Parser:
         if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
           raise Exception("Parse statement IF error")
         else:
+          Parser.tokens.select_next()
           other_node = Parser.parse_statement()
           if Parser.tokens.actual_token.token_type == "ELSE":
             Parser.tokens.select_next()
@@ -167,6 +165,7 @@ class Parser:
         if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
           raise Exception("Parse statement WHILE error")
         else:
+          Parser.tokens.select_next()
           node = While("while", [node, Parser.parse_statement()])
       else:
         raise Exception("Parse statement WHILE error")
