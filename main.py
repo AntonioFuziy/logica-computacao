@@ -53,7 +53,7 @@ class Parser:
   def parse_term():
     node = Parser.parse_factor()
     
-    while (Parser.tokens.actual_token.token_type in ["MULT", "DIV"]):      
+    while (Parser.tokens.actual_token.token_type in ["MULT", "DIV", "AND"]):      
       if Parser.tokens.actual_token.token_type == "MULT":
         Parser.tokens.select_next()
         node = BinOp("*", [node, Parser.parse_factor()])
@@ -74,7 +74,7 @@ class Parser:
   def parse_expression():
     node = Parser.parse_term()
 
-    while (Parser.tokens.actual_token.token_type in ["PLUS", "MINUS"]):
+    while (Parser.tokens.actual_token.token_type in ["PLUS", "MINUS", "OR"]):
       if Parser.tokens.actual_token.token_type == "PLUS":
         Parser.tokens.select_next()
         node = BinOp("+", [node, Parser.parse_term()])
@@ -145,6 +145,7 @@ class Parser:
         Parser.tokens.select_next()
         node = Parser.relative_expression()
         if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+          print("close par")
           raise Exception("Parse statement IF error")
         else:
           Parser.tokens.select_next()
