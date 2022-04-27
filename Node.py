@@ -79,4 +79,4 @@ class If(Node):
 
 class Scanf(Node):
   def Evaluate(self, symbol_table):
-    int(input())
+    return int(input())
