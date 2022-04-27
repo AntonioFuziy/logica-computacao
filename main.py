@@ -14,6 +14,7 @@ class Parser:
       Parser.tokens.select_next()
     
     elif Parser.tokens.actual_token.token_type == "OPEN_PAR":
+      Parser.tokens.select_next()
       node = Parser.relative_expression()
       if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
         raise Exception("Parenthesis error")
