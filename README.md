@@ -6,34 +6,20 @@ ___
 
 ## Diagrama Sintático do Compilador
 
-![Diagrama Sintatico](https://github.com/AntonioFuziy/logica-computacao/blob/main/images/diagrama_sintatico_roteiro4.png?raw=true)
+![Diagrama Sintatico](https://github.com/AntonioFuziy/logica-computacao/blob/main/images/diagrama_sintatico_roteiro6.png?raw=true)
 
 ## EBNF
 
 ```
 BLOCK = "{", STATEMENT, "}";
 
-STATEMENT = ";" | 
-
-(identifier, "=", RELATIONAL_EXPRESSION, ";") |
-
-(printf, "(", RELATIONAL_EXPRESSION, ")", ";") |
-
-(BLOCK) |
-
-(while, "(", RELATIONAL_EXPRESSION, ")", STATEMENT) |
-
-(if, "(", RELATIONAL_EXPRESSION, ")", STATEMENT, { else, STATEMENT });
+STATEMENT = ";" | (identifier, "=", RELATIONAL_EXPRESSION, ";") | (printf, "(", RELATIONAL_EXPRESSION, ")", ";") | (BLOCK) | (while, "(", RELATIONAL_EXPRESSION, ")", STATEMENT) | (if, "(", RELATIONAL_EXPRESSION, ")", STATEMENT, { else, STATEMENT });
 
 RELATIONAL_EXPRESSION = EXPRESSION, { ("==" | "<" | ">"), EXPRESSION };
 
 EXPRESSION = TERM, { ("+" | "-" | "||"), TERM };
 
-TERM = FACTOR, { ("*" | "/" | "&&") }
+TERM = FACTOR, { ("*" | "/" | "&&") };
 
-FACTOR = number |
-identifier |
-("+" | "-" | "!"), FACTOR | 
-"(", RELATIONAL_EXPRESSION, ")" |
-scanf, "(", ")";
+FACTOR = number | identifier | ("+" | "-" | "!"), FACTOR | "(", RELATIONAL_EXPRESSION, ")" | scanf, "(", ")";
 ```
