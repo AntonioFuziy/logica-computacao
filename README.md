@@ -10,4 +10,30 @@ ___
 
 ## EBNF
 
-![EBNF](https://github.com/AntonioFuziy/logica-computacao/blob/main/images/EBNF_roteiro4.png?raw=true)
+```
+BLOCK = "{", STATEMENT, "}";
+
+STATEMENT = ";" | 
+
+(identifier, "=", RELATIONAL_EXPRESSION, ";") |
+
+(printf, "(", RELATIONAL_EXPRESSION, ")", ";") |
+
+(BLOCK) |
+
+(while, "(", RELATIONAL_EXPRESSION, ")", STATEMENT) |
+
+(if, "(", RELATIONAL_EXPRESSION, ")", STATEMENT, { else, STATEMENT });
+
+RELATIONAL_EXPRESSION = EXPRESSION, { ("==" | "<" | ">"), EXPRESSION };
+
+EXPRESSION = TERM, { ("+" | "-" | "||"), TERM };
+
+TERM = FACTOR, { ("*" | "/" | "&&") }
+
+FACTOR = number |
+identifier |
+("+" | "-" | "!"), FACTOR | 
+"(", RELATIONAL_EXPRESSION, ")" |
+scanf, "(", ")";
+```
