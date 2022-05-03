@@ -13,7 +13,7 @@ ___
 ```
 BLOCK = "{", STATEMENT, "}";
 
-STATEMENT = ";" | (identifier, "=", RELATIONAL_EXPRESSION, ";") | (printf, "(", RELATIONAL_EXPRESSION, ")", ";") | (BLOCK) | (while, "(", RELATIONAL_EXPRESSION, ")", STATEMENT) | (if, "(", RELATIONAL_EXPRESSION, ")", STATEMENT, { else, STATEMENT });
+STATEMENT =  (λ | ASSIGNMENT | BLOCK | PRINT | IF | WHILE), ";";
 
 RELATIONAL_EXPRESSION = EXPRESSION, { ("==" | "<" | ">"), EXPRESSION };
 
@@ -21,5 +21,23 @@ EXPRESSION = TERM, { ("+" | "-" | "||"), TERM };
 
 TERM = FACTOR, { ("*" | "/" | "&&") };
 
-FACTOR = number | identifier | ("+" | "-" | "!"), FACTOR | "(", RELATIONAL_EXPRESSION, ")" | scanf, "(", ")";
+FACTOR = NUMBER | IDENTIFIER | (("+" | "-" | "!"), FACTOR) | "(", RELATIONAL_EXPRESSION, ")" | SCANF;
+
+ASSIGNMENT = IDENTIFIER, "=", EXPRESSION;
+
+PRINT = "printf", "(", EXPRESSION, ")";
+
+IF = "if", "(", RELATIONAL_EXPRESSION, ")", STATEMENT, { ("else", STATEMENT) | λ };
+
+WHILE = "while", "(", RELATIONAL_EXPRESSION, ")", STATEMENT;
+
+SCANF = "scanf", "(", ")";
+
+NUMBER = DIGIT, { DIGIT };
+
+DIGIT = ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 );
+
+IDENTIFIER = LETTER, { LETTER | DIGIT | "_" };
+
+LETTER = (a | b | c | d | ... x | y | z | A | B | ... | Y | Z );
 ```
