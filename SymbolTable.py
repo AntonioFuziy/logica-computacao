@@ -20,6 +20,8 @@ class SymbolTable():
     return self.table[name]
 
   def create(self, name, var_type):
+    if name in self.table.keys():
+      raise Exception(f"{name} is already defined")
     if var_type == "INT":
       self.table[name] = (None, var_type)
     elif var_type == "STRING":

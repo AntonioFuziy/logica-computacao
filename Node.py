@@ -42,31 +42,65 @@ class BinOp(Node):
 
     if first_children[1] == "STRING" and second_children[1] == "STRING":
       if self.value == ">":
-        return (first_children[0] > second_children[0], "STRING")
+        if first_children[0] > second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
+
       elif self.value == "<":
-        return (first_children[0] < second_children[0], "STRING")
+        if first_children[0] < second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
+
       elif self.value == "==":
-        return (first_children[0] == second_children[0], "STRING")
+        if first_children[0] == second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
 
     elif first_children[1] == "INT" and second_children[1] == "INT":
       if self.value == "*":
         return (first_children[0] * second_children[0], "INT")
+
       elif self.value == "/":
         return (first_children[0] // second_children[0], "INT")
+        
       elif self.value == "+":
         return (first_children[0] + second_children[0], "INT")
+
       elif self.value == "-":
         return (first_children[0] - second_children[0], "INT")
+
       elif self.value == "==":
-        return (first_children[0] == second_children[0], "INT")
+        if first_children[0] == second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
+
       elif self.value == "&&":
-        return (first_children[0] and second_children[0], "INT")
+        if first_children[0] and second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
+
       elif self.value == "||":
-        return (first_children[0] or second_children[0], "INT")
+        if first_children[0] or second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
+
       elif self.value == ">":
-        return (first_children[0] > second_children[0], "INT")
+        if first_children[0] > second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
+
       elif self.value == "<":
-        return (first_children[0] < second_children[0], "INT")
+        if first_children[0] < second_children[0]:
+          return (1, "INT")
+        else:
+          return (0, "INT")
 
     else:
       raise Exception("BinOp error")
@@ -79,11 +113,11 @@ class UnOp(Node):
       raise Exception("STRING cannot be used for this operation")
 
     if self.value == "+":
-      return unique_children[1]
+      return (unique_children[0], "INT")
     elif self.value == "-":
-      return -unique_children[1]
+      return (-unique_children[0], "INT")
     elif self.value == "!":
-      return not unique_children[1]
+      return (not unique_children[0], "INT")
     else:
       raise Exception("UnOp error")
 
@@ -102,15 +136,15 @@ class NoOp(Node):
 class While(Node):
   def Evaluate(self, symbol_table):
     while self.children[0].Evaluate(symbol_table)[0]:
-      self.children[1].Evaluate(symbol_table)[0]
+      self.children[1].Evaluate(symbol_table)
 
 class If(Node):
   def Evaluate(self, symbol_table):
     if self.children[0].Evaluate(symbol_table)[0]:
-      self.children[1].Evaluate(symbol_table)[0]
+      self.children[1].Evaluate(symbol_table)
     elif len(self.children) > 2:
-      self.children[2].Evaluate(symbol_table)[0]
+      self.children[2].Evaluate(symbol_table)
 
 class Scanf(Node):
   def Evaluate(self, symbol_table):
-    return int(input())
+    return (int(input()), "INT")

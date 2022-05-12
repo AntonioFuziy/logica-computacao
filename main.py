@@ -138,7 +138,6 @@ class Parser:
         Parser.tokens.select_next()
         node = Printf("printf", [Parser.relative_expression()])
         if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
-          # print(Parser.tokens.actual_token.value)
           raise Exception("Parse statement error")
         else:
           Parser.tokens.select_next()
