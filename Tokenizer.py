@@ -10,40 +10,51 @@ class Tokenizer:
       "scanf": "SCANF",
       "if": "IF",
       "while": "WHILE", 
-      "else": "ELSE"
+      "else": "ELSE",
+      "str": "STRING",
+      "int": "INT"
     }
 
-  def select_next(self):    
+  def select_next(self):
     while self.position < len(self.origin) and self.origin[self.position] == "\n":
       self.position += 1
 
-    #checar se o proximo caracter é um EOF
     if self.position >= len(self.origin):
       self.actual_token = Token("EOF", " ")
       return self.actual_token
+    
+    if self.origin[self.position] == " ":
+      self.position += 1
+      return self.select_next()
 
-    #checar se o proximo caracter é um *
     if self.origin[self.position] == "*":
       self.position += 1
       self.actual_token = Token("MULT", "*")
       return self.actual_token
       
-    #checar se o proximo caracter é um /
     elif self.origin[self.position] == "/":
       self.position += 1
       self.actual_token = Token("DIV", "/")
       return self.actual_token
     
-    #checar se o proximo caracter é um +
     elif self.origin[self.position] == "+":
       self.position += 1
       self.actual_token = Token("PLUS", " ")
       return self.actual_token
     
-    #checar se o proximo caracter é um -
     elif self.origin[self.position] == "-":
       self.position += 1
       self.actual_token = Token("MINUS", " ")
+      return self.actual_token
+
+    elif self.origin[self.position] == ".":
+      self.position += 1
+      self.actual_token = Token("CONCATENATE", " ")
+      return self.actual_token
+
+    elif self.origin[self.position] == ",":
+      self.position += 1
+      self.actual_token = Token("SEPARATOR", " ")
       return self.actual_token
 
     elif self.origin[self.position] == "(":
@@ -81,6 +92,17 @@ class Tokenizer:
       self.actual_token = Token("CLOSE_BRACKET", " ")
       return self.actual_token
     
+    elif self.origin[self.position] == '"':
+      self.position += 1
+      new_str = self.origin[self.position]
+      self.position += 1
+      while self.position < len(self.origin) and self.origin[self.position] != '"':
+        new_str += self.origin[self.position]
+        self.position += 1
+      self.actual_token = Token("STRING", new_str)
+      self.position += 1
+      return self.actual_token
+    
     #checar se o proximo caracter é um digito
     elif self.origin[self.position].isnumeric():
       candidato = self.origin[self.position]
@@ -97,11 +119,11 @@ class Tokenizer:
         
         #se não for um digito
         else:
-          self.actual_token = Token("NUMBER", int(candidato))
+          self.actual_token = Token("INT", int(candidato))
           return self.actual_token
 
       #atualiza o token
-      self.actual_token = Token("NUMBER", int(candidato))
+      self.actual_token = Token("INT", int(candidato))
       return self.actual_token
 
     elif self.origin[self.position].isalpha():

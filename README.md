@@ -21,7 +21,7 @@ EXPRESSION = TERM, { ("+" | "-" | "||"), TERM };
 
 TERM = FACTOR, { ("*" | "/" | "&&") };
 
-FACTOR = NUMBER | IDENTIFIER | (("+" | "-" | "!"), FACTOR) | "(", RELATIONAL_EXPRESSION, ")" | SCANF;
+FACTOR = INT | IDENTIFIER | (("+" | "-" | "!"), FACTOR) | "(", RELATIONAL_EXPRESSION, ")" | SCANF;
 
 ASSIGNMENT = IDENTIFIER, "=", EXPRESSION;
 
@@ -33,7 +33,7 @@ WHILE = "while", "(", RELATIONAL_EXPRESSION, ")", STATEMENT;
 
 SCANF = "scanf", "(", ")";
 
-NUMBER = DIGIT, { DIGIT };
+INT = DIGIT, { DIGIT };
 
 DIGIT = ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 );
 

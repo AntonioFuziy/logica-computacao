@@ -1,4 +1,9 @@
 {
-    i = scanf();
-    printf(i);
+    int x, y;
+    str z;
+    x = 1;
+    y = x || (1==1);
+    z = "x: ";
+    printf(x+y);
+    printf(z.y);
 }
