@@ -175,13 +175,14 @@ class NoOp(Node):
 
 class While(Node):
   def Evaluate(self, symbol_table, asm_code):
-    asm_code.write(f"LOOP_{Node.new_id()}:")
+    current_label_id = Node.new_id()
+    asm_code.write(f"LOOP_{current_label_id}:")
     self.children[0].Evaluate(symbol_table, asm_code)
     asm_code.write("CMP EBX, False")
-    asm_code.write(f"JE EXIT_{Node.new_id()}")
+    asm_code.write(f"JE EXIT_{current_label_id}")
     self.children[1].Evaluate(symbol_table, asm_code)
-    asm_code.write(f"JMP LOOP_{Node.new_id()}")
-    asm_code.write(f"EXIT_{Node.new_id()}:")
+    asm_code.write(f"JMP LOOP_{current_label_id}")
+    asm_code.write(f"EXIT_{current_label_id}:")
     
     # while self.children[0].Evaluate(symbol_table, asm_code)[0]:
     #   self.children[1].Evaluate(symbol_table, asm_code)
