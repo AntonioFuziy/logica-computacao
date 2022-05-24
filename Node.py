@@ -195,18 +195,17 @@ class If(Node):
     asm_code.write("CMP EBX, False")
     asm_code.write(f"JE ELSE_{current_label_id}")
     self.children[1].Evaluate(symbol_table, asm_code)
-    asm_code.write(f"JMP END_IF_{current_label_id}:")
+    asm_code.write(f"JMP END_IF_{current_label_id}")
     asm_code.write(f"ELSE_{current_label_id}:")
     
     if len(self.children) > 2:
       self.children[2].Evaluate(symbol_table, asm_code)
     asm_code.write(f"END_IF_{current_label_id}:")
 
-
-    if self.children[0].Evaluate(symbol_table, asm_code)[0]:
-      self.children[1].Evaluate(symbol_table, asm_code)
-    elif len(self.children) > 2:
-      self.children[2].Evaluate(symbol_table, asm_code)
+    # if self.children[0].Evaluate(symbol_table, asm_code)[0]:
+    #   self.children[1].Evaluate(symbol_table, asm_code)
+    # elif len(self.children) > 2:
+    #   self.children[2].Evaluate(symbol_table, asm_code)
 
 class Scanf(Node):
   def Evaluate(self, symbol_table, asm_code):
