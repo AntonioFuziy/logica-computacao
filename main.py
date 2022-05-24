@@ -4,6 +4,7 @@ from Node import Assignment, BinOp, Block, Identifier, If, IntVal, NoOp, Printf,
 from PrePro import PrePro
 from SymbolTable import SymbolTable
 from Tokenizer import Tokenizer
+from Asm import Asm
 
 class Parser:
   tokens = None
@@ -239,4 +240,6 @@ code = f.read()
 f.close()
 AST = Parser.run(code)
 symbol_table = SymbolTable()
-AST.Evaluate(symbol_table)
+asm_code = Asm(code="", code_file=sys.argv[1])
+AST.Evaluate(symbol_table, asm_code)
+asm_code.dump()
