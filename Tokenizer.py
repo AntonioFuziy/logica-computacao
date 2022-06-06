@@ -12,7 +12,9 @@ class Tokenizer:
       "while": "WHILE", 
       "else": "ELSE",
       "str": "STRING",
-      "int": "INT"
+      "int": "INT",
+      "void": "VOID",
+      "return": "RETURN"
     }
 
   def select_next(self):

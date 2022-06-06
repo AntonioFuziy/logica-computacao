@@ -1,6 +1,6 @@
 import sys
 
-from Node import Assignment, BinOp, Block, Identifier, If, IntVal, NoOp, Printf, Scanf, StrVal, UnOp, VarDec, While
+from Node import Assignment, BinOp, Block, FuncCall, FuncDec, Identifier, If, IntVal, NoOp, Printf, Return, Scanf, StrVal, UnOp, VarDec, While
 from PrePro import PrePro
 from SymbolTable import SymbolTable
 from Tokenizer import Tokenizer
@@ -47,9 +47,27 @@ class Parser:
       Parser.tokens.select_next()
 
     elif Parser.tokens.actual_token.token_type == "IDENTIFIER":
+      function_name = Parser.tokens.actual_token.value
       node = Identifier(Parser.tokens.actual_token.value, [])
       Parser.tokens.select_next()
-    
+      if Parser.tokens.actual_token.token_type == "OPEN_PAR":
+        children = []
+        Parser.tokens.select_next()
+        if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+          node = Parser.relative_expression()
+          children.append(node)
+          while Parser.tokens.actual_token.token_type == "SEPARATOR":
+            Parser.tokens.select_next()
+            node = Parser.relative_expression()
+            children.append(node)
+          if Parser.tokens.actual_token.token_type == "CLOSE_PAR":
+            Parser.tokens.select_next()
+            node = FuncCall(function_name, children)
+          else:
+            raise Exception("Func call error")
+        
+        elif Parser.tokens.actual_token.token_type == "CLOSE_PAR":
+          Parser.tokens.select_next()
     else:
       raise Exception("Parse factor error")
       
@@ -58,7 +76,7 @@ class Parser:
   def parse_term():
     node = Parser.parse_factor()
     
-    while (Parser.tokens.actual_token.token_type in ["MULT", "DIV", "AND"]):      
+    while (Parser.tokens.actual_token.token_type in ["MULT", "DIV", "AND"]):
       if Parser.tokens.actual_token.token_type == "MULT":
         Parser.tokens.select_next()
         node = BinOp("*", [node, Parser.parse_factor()])
@@ -129,8 +147,20 @@ class Parser:
           Parser.tokens.select_next()
         else:
           raise Exception("Parse statement error")
-      else:
-        raise Exception("Parse statement error")
+      
+      elif Parser.tokens.actual_token.token_type == "OPEN_PAR":
+        Parser.tokens.select_next()
+        if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+          node = FuncCall(Parser.tokens.actual_token.value, [Parser.relative_expression()])
+        else:
+          Parser.tokens.select_next()
+          if Parser.tokens.actual_token.token_type == "SEMICOLON":
+            Parser.tokens.select_next()
+          else:
+            raise Exception("Parse statement error")
+        
+      # else:
+      #   raise Exception("Parse statement error")
 
     elif Parser.tokens.actual_token.token_type == "PRINTF":
       Parser.tokens.select_next()
@@ -201,6 +231,22 @@ class Parser:
         else:
           raise Exception("Parse statement TYPE error")
 
+    elif Parser.tokens.actual_token.token_type == "RETURN":
+      Parser.tokens.select_next()
+      if Parser.tokens.actual_token.token_type == "OPEN_PAR":
+        Parser.tokens.select_next()
+        node = Return("return", [Parser.relative_expression()])
+        if Parser.tokens.actual_token.token_type != "CLOSE_PAR":
+          raise Exception("Parse statement error")
+        else:
+          Parser.tokens.select_next()
+          if Parser.tokens.actual_token.token_type == "SEMICOLON":
+            Parser.tokens.select_next()
+          else:
+            raise Exception("Parse statement error")
+      else:
+        raise Exception("Parse statement error")
+
     elif Parser.tokens.actual_token.token_type == "SEMICOLON":
       node = NoOp(None, [])
       Parser.tokens.select_next()
@@ -223,15 +269,74 @@ class Parser:
       raise Exception("Parse block error")
     return node
   
+  def parse_declaration():
+    function_name = ""
+    if Parser.tokens.actual_token.token_type in ["INT", "STRING", "VOID"]:    
+      children = []
+      var_type = Parser.tokens.actual_token.token_type
+      Parser.tokens.select_next()
+      if Parser.tokens.actual_token.token_type == "IDENTIFIER":
+        node = VarDec(var_type, [Parser.tokens.actual_token])
+        function_name = Parser.tokens.actual_token.value
+        children.append(node)
+        Parser.tokens.select_next()
+        if Parser.tokens.actual_token.token_type == "OPEN_PAR":
+          Parser.tokens.select_next()
+          if Parser.tokens.actual_token.token_type in ["INT", "STRING", "VOID"]:
+            var_type = Parser.tokens.actual_token.token_type
+            Parser.tokens.select_next()
+            if Parser.tokens.actual_token.token_type == "IDENTIFIER":
+              node = VarDec(var_type, [Parser.tokens.actual_token])
+              children.append(node)
+              Parser.tokens.select_next()
+              while Parser.tokens.actual_token.token_type == "SEPARATOR":
+                Parser.tokens.select_next()
+                if Parser.tokens.actual_token.token_type in ["INT", "STRING", "VOID"]:
+                  var_type = Parser.tokens.actual_token.token_type
+                  Parser.tokens.select_next()
+                  if Parser.tokens.actual_token.token_type == "IDENTIFIER":
+                    node = VarDec(var_type, [Parser.tokens.actual_token])
+                    children.append(node)
+                    Parser.tokens.select_next()
+
+                    if Parser.tokens.actual_token.token_type == "CLOSE_PAR":
+                      Parser.tokens.select_next()
+                      node = Parser.parse_block()
+                      children.append(node)
+          
+          elif Parser.tokens.actual_token.token_type == "CLOSE_PAR":
+            Parser.tokens.select_next()
+            node = Parser.parse_block()
+            children.append(node)
+            
+          else:
+            raise Exception("Parse declaration error")
+    else:
+      raise Exception("Parse declaration error")
+
+    return FuncDec(function_name, children)
+                
+  def parse_program():
+    functions = []
+    while Parser.tokens.actual_token.token_type != "EOF":
+      node = Parser.parse_declaration()
+      functions.append(node)
+    node = Block(None, functions)
+    Parser.tokens.select_next()
+
+    return node
+  
   def run(code):
     code_filtered = PrePro(code).filter_expression()
     Parser.tokens = Tokenizer(code_filtered)
     Parser.tokens.select_next()
-    node = Parser.parse_block()
+    node = Parser.parse_program()
 
     if Parser.tokens.actual_token.token_type != "EOF":
       raise Exception("EOF run error")
     
+    node.children.append(FuncCall("main", []))
+
     return node
 
 f = open(sys.argv[1],"r")

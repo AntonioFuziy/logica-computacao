@@ -1,3 +1,7 @@
+from FuncTable import FuncTable
+from SymbolTable import SymbolTable
+
+
 class Node():
   def __init__(self, value, children):
     self.value = value
@@ -21,6 +25,8 @@ class Printf(Node):
 class Block(Node):
   def Evaluate(self, symbol_table):
     for child in self.children:
+      if child.value == "return":
+        return child.Evaluate(symbol_table)
       child.Evaluate(symbol_table)
     
 class VarDec(Node):
@@ -148,3 +154,25 @@ class If(Node):
 class Scanf(Node):
   def Evaluate(self, symbol_table):
     return (int(input()), "INT")
+
+class FuncCall(Node):
+  def Evaluate(self, symbol_table):
+    arguments = []
+    new_function = FuncTable.getter(self.value)
+    new_symbol_table = SymbolTable()
+    for i in range(1, len(new_function.children)-1):
+      arguments.append(new_function.children[i].children[0].value)
+      new_function.children[i].Evaluate(new_symbol_table)
+    
+    for j in range(len(arguments)):
+      new_symbol_table.setter(arguments[j], self.children[j].Evaluate(symbol_table)[0])
+
+    return new_function.children[-1].Evaluate(new_symbol_table)
+
+class FuncDec(Node):
+  def Evaluate(self, symbol_table):
+    FuncTable.create(self.value, self)
+
+class Return(Node):
+  def Evaluate(self, symbol_table):
+    return self.children[0].Evaluate(symbol_table)
