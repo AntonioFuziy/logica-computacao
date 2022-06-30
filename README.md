@@ -4,9 +4,6 @@
 
 ___
 
-## Diagrama Sintático do Compilador
-
-![Diagrama Sintatico](https://github.com/AntonioFuziy/logica-computacao/blob/main/images/diagrama_sintatico_roteiro6.png?raw=true)
 
 ## EBNF
 
